@@ -37,6 +37,10 @@ log() {
 	echo $(date +"%D %T : $1") >> $LOG_FILE
 }
 
+sendmail() {
+	echo "$1 complete for $2" | mail -s "$1 complete" chrishowell1@hotmail.co.uk
+}
+
 # DOING THE WORK -------
 
 log "========== STARTING BATCH ==========="
@@ -51,17 +55,21 @@ do
 		log "NO_CONVERT: $FILE"
 		log "Moving to: $DEST/$full_filename"
 		mv "$FILE" "$DEST/$full_filename"
+		sendmail "DOWNLOAD MP4" "$full_filename"
 	elif [[ $extension =~ $VIDEXT_REGEX ]] ; then
 		log "CONVERT: $FILE"
 		convert "$FILE"
+		sendmail "DOWNLOAD & CONVERT TO MP4" "$full_filename"
 	elif [[ $extension =~ $MUSEXT_REGEX ]] ; then
 		log "NO_CONVERT_MUSIC: $FILE"
 		log "Moving to: $MUSIC_DEST/$full_filename"
 		mv "$FILE" "$MUSIC_DEST/$full_filename"
+		sendmail "DOWNLOAD MUSIC" "$full_filename"
 	else
 		log "OTHER_FILE: $FILE"
 		log "Moving to: $OTHER_DEST/$full_filename"
 		mv "$FILE" "$OTHER_DEST/$full_filename"
+		sendmail "DOWNLOAD OTHER" "$full_filename"
 	fi
 done
 
