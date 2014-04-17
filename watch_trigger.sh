@@ -3,8 +3,9 @@
 WATCHED_DIR="/home/chris/torrent/complete/"
 
 echo "Watching directory: $WATCHED_DIR for new files"
-inotifywait -m -e moved_to "$WATCHED_DIR" |
+inotifywait -m -e moved_to --format %f "$WATCHED_DIR" |
   while read file
   do
-	./process_complete.sh
+	/home/chris/torrent/.scripts/process_complete.sh
   done
+
