@@ -42,8 +42,9 @@ udp://tracker.publicbt.com:80/announce
     ------------------------------------
     List of hostnames to remove. ^ = beginning \$ = end of hostname, first line is basically
     *.thepiratebay.org and the last line 91.191.138.*
-    EOF
-    ;
+EOF
+
+;
     
 	exit(0);
 }
