@@ -2,6 +2,8 @@
 
 . ./mail_config.sh
 
+MBOX="INBOX"
+
 function imap_login() {
   local user passwd
 
@@ -48,9 +50,9 @@ function imap_select_mbox() {
   local mbox
 
   mbox=$1
-  [ -z "$mbox" ] && mbox=INBOX
+  [ -z "$mbox" ] && MBOX="$MBOX" || MBOX="$mbox"
 
-  imap_send "select" "$mbox"
+  imap_send "select" "$MBOX"
   [ "$?" != 0 ] && return 1 || return 0
 }
 
@@ -61,6 +63,11 @@ function imap_search() {
 
   RESULT=`echo "$OUTPUT" | grep "^* SEARCH" | sed 's,.*SEARCH \(.*[0-9]*\).*,\1,'`
   return 0
+}
+
+function imap_status() {
+  imap_send "status" "$MBOX" "(MESSAGES)"
+  echo "$OUTPUT"
 }
 
 function imap_delete() {
