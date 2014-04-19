@@ -21,23 +21,21 @@ function imap_login() {
 function imap_send() {
   local result line
 
+  echo "tag $@" >&5
   OUTPUT=""
 
-  echo "tag $@" >&5
-
-  while read result; do
+  while read -t 2 result; do
     line="`echo "$result" | tr '\r' ' '`"
-    echo "$line"
-    break
-#    OUTPUT="$OUTPUT
-#$line"
-#    echo "$line" | grep "^A0 OK" >/dev/null && return 0
-#    echo "$line" | grep "^A0 NO" >/dev/null && echo "imap:error:$line" && return 1
-#  done
+    OUTPUT=$OUTPUT$'\n'$line
+
+    echo "$line" | grep "^tag OK" >/dev/null
+# && return 0
+    echo "$line" | grep "^tag NO" >/dev/null && echo "imap:error:$line" && return 1
   done <&6
 
-  echo "exited do loop"
- return 0
+  echo "$OUTPUT"
+
+  return 0
 }
 
 function imap_logout() {
