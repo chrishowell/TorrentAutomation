@@ -32,5 +32,6 @@ echo "torrent file downloaded successfully, located at $temptorrentfiledest"
 
 $torrentutility -a -noconfirm "$temptrackerfiledest" "$temptorrentfiledest"
 
-cp $temptorrentfiledest $torrentfiledest
+mv $temptorrentfiledest $torrentfiledest
+rm $temptrackerfiledest
 echo "PROCESS-COMPLETE: torrent file placed into watch directory"
