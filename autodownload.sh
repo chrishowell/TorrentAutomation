@@ -38,13 +38,11 @@ logwarning() {
 
 getcontent() {
   url=$(cleanseurl "$1")
-  echo "CHURL $url"
   echo $(curl --globoff -L "$url")
 }
 
 getfile() {
   url=$(cleanseurl "$2")
-  echo "CHURL $url"
   curl -L --globoff -o "$1" "$url"
 }
 
