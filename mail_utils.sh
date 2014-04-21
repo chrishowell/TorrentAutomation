@@ -23,21 +23,21 @@ function imap_login() {
 function imap_send() {
   local result line
 
-  echo "tag $@" >&5
+  command="tag $@"
+  echo $command >&5
+
   OUTPUT=""
 
   while read -t 2 result; do
     line="`echo "$result" | tr '\r' ' '`"
     OUTPUT=$OUTPUT$'\n'$line
 
-    echo "$line" | grep "^tag OK" >/dev/null
-# && return 0
+    echo "$line" | grep "^tag OK" >/dev/null && return 0
     echo "$line" | grep "^tag NO" >/dev/null && echo "imap:error:$line" && return 1
+    echo "$line" | grep "^tag BAD" >/dev/null && echo "imap:error:$line" && return 1
   done <&6
 
-  echo "$OUTPUT"
-
-  return 0
+  return 1
 }
 
 function imap_logout() {
@@ -66,15 +66,54 @@ function imap_search() {
 }
 
 function imap_status() {
-  imap_send "status" "$MBOX" "(MESSAGES)"
-  echo "$OUTPUT"
+  RESULT=''
+  imap_send "status" "$MBOX" "(UNSEEN MESSAGES)"
+  [ "$?" != 0 ] && return 1
+  RESULT=`echo "$OUTPUT" | grep "^* STATUS"`
+  resultregex="MESSAGES ([0-9]+) UNSEEN ([0-9]+)"
+  if [[ $RESULT =~ $resultregex ]]; then
+    RESULT='Messages: '${BASH_REMATCH[1]}' Unread: '${BASH_REMATCH[2]}
+  fi
 }
 
 function imap_delete() {
   local uid
-
   uid=$1
 
   imap_send "store" "$uid" "flags" "\\Deleted"
   [ "$?" != 0 ] && return 1 || return 0
+}
+
+function imap_subject() {
+  local uid
+  uid=$1
+
+  imap_send "fetch" "$uid (BODY[HEADER.FIELDS (subject)])"
+  [ "$?" != 0 ] && return 1
+
+  subjectregex=".*?\{[0-9]+\}.*?Subject:[ "'
+'"]*(.*?)[ "'
+'"]*\)"
+
+  if [[ $OUTPUT =~ $subjectregex ]]; then
+    RESULT=${BASH_REMATCH[1]}
+  fi
+}
+
+function imap_body() {
+  local uid
+  uid=$1
+
+  RESULT=''
+
+  imap_send "fetch" "$uid (BODY[TEXT])"
+  [ "$?" != 0 ] && return 1
+
+  bodyregex=".*?\{[0-9]+\}[ "'
+'"]*(.*?)[ "'
+'"]*\)"
+
+  if [[ $OUTPUT =~ $bodyregex ]]; then
+    RESULT=${BASH_REMATCH[1]}
+  fi
 }
