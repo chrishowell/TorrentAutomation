@@ -1,13 +1,19 @@
 #/bin/bash
 
-. ./mail_config.sh
+. ./cleansing_utils.sh
+. ./curl_utils.sh
+. ./mail_logging.sh
 
-torrentzurl=$1
+torrentzurl="$(trim $1)"
+torrentname="$(trim $2)"
+
+[[ -z $torrentname ]] && torrentname="Unnamed Torrent"
+
 torrentzbaseurl=http://torrentz-proxy.com
 limetorrentstub=www.limetorrents.com
 torrentwatchloc=/home/chris/torrent/watch
 temploc=/home/chris/torrent/.scripts/temp
-uniquecode=$(date +%s)
+uniquecode=$torrentname$(date +%s)
 torrentutility=/home/chris/torrent/.scripts/addtrackers.pl
 
 temptorrentfiledest=$temploc/$uniquecode.torrent
@@ -17,38 +23,15 @@ torrentfiledest=$torrentwatchloc/$uniquecode.torrent
 # Logging
 
 loginfo() {
-  infostring="PROCESS-INFO: $1"
-  echo $infostring
-  echo $infostring | mail -s "PROCESS-INFO" $monitor_email
+  maillog_info "$1 for $torrentname"
 }
 
 logerror() {
-  errorstring="ABANDON-PROCESS: $1"
-  echo $errorstring
-  echo $errorstring | mail -s "ABANDON-PROCESS" $monitor_email
+  maillog_error "$1 for torrentname"
 }
 
 logwarning() {
-  warningstring="PROCESS-WARNING $1"
-  echo $warningstring
-  echo $warningstring | mail -s "PROCESS-WARNING" $monitor_email
-}
-
-# CURLing
-
-getcontent() {
-  url=$(cleanseurl "$1")
-  echo $(curl --globoff -L "$url")
-}
-
-getfile() {
-  url=$(cleanseurl "$2")
-  curl -L --globoff -o "$1" "$url"
-}
-
-cleanseurl() {
-  url=`echo "$1"|sed 's/ /%20/g'`
-  echo $url
+  maillog_warning "$1 for torrentname"
 }
 
 # Script
