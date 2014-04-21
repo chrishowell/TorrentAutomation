@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . ./mail_config.sh
+. ./cleansing_utils.sh
 
 MBOX="INBOX"
 
@@ -91,12 +92,12 @@ function imap_subject() {
   imap_send "fetch" "$uid (BODY[HEADER.FIELDS (subject)])"
   [ "$?" != 0 ] && return 1
 
-  subjectregex=".*?\{[0-9]+\}.*?Subject:[ "'
-'"]*(.*?)[ "'
-'"]*\)"
+  subjectregex=".*?\{[0-9]+\}.*?Subject:[ ]*(.*?)\)"
 
   if [[ $OUTPUT =~ $subjectregex ]]; then
-    RESULT=${BASH_REMATCH[1]}
+#strange
+    RESULT="${BASH_REMATCH[1]}"
+    RESULT=$(trim "$RESULT")
   fi
 }
 
@@ -109,11 +110,11 @@ function imap_body() {
   imap_send "fetch" "$uid (BODY[TEXT])"
   [ "$?" != 0 ] && return 1
 
-  bodyregex=".*?\{[0-9]+\}[ "'
-'"]*(.*?)[ "'
-'"]*\)"
+  bodyregex=".*?\{[0-9]+\}[ ]*(.*?)\)"
 
   if [[ $OUTPUT =~ $bodyregex ]]; then
-    RESULT=${BASH_REMATCH[1]}
+#strange
+    RESULT="${BASH_REMATCH[1]}"
+    RESULT="$(trim $RESULT)"
   fi
 }

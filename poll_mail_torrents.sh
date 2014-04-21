@@ -6,10 +6,10 @@
 # Helper Functions
 
 processmessage() {
-  subject="$(trim $1)"
-  body="$(trim $2)"
+  subject=$(trim "$1")
+  body=$(trim "$2")
 
-  /home/chris/torrent/.scripts/auto_download.sh "$2" "$1"
+  /home/chris/torrent/.scripts/auto_download.sh "$body" "$subject"
 }
 
 # Actual Script
@@ -52,12 +52,12 @@ do
     subject="$RESULT"
     imap_body $messageid
     body="$RESULT"
-
     processmessage "$subject" "$body"
     if [ "$?" != 0 ]; then
       continue
     fi
 
+#    imap_delete $messageid
 done
 
 # Logout

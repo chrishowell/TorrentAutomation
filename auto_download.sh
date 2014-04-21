@@ -4,8 +4,8 @@
 . ./curl_utils.sh
 . ./mail_logging.sh
 
-torrentzurl="$(trim $1)"
-torrentname="$(trim $2)"
+torrentzurl=$1
+torrentname=$2
 
 [[ -z $torrentname ]] && torrentname="Unnamed Torrent"
 
@@ -68,6 +68,6 @@ echo "torrent file downloaded successfully, located at $temptorrentfiledest"
 
 $torrentutility -a -noconfirm "$temptrackerfiledest" "$temptorrentfiledest"
 
-mv $temptorrentfiledest $torrentfiledest
-rm $temptrackerfiledest
+#mv $temptorrentfiledest $torrentfiledest
+rm "$temptrackerfiledest"
 loginfo "torrent download in progress"
