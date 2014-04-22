@@ -25,7 +25,7 @@ function imap_send() {
   local result line
 
   command="tag $@"
-  echo $command >&5
+  echo "$command" >&5
 
   OUTPUT=""
 
