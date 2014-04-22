@@ -44,6 +44,7 @@ imap_search "HEADER X-Originating-Email $monitor_email"
 [ "$?" != 0 ] \
   && imap_logout \
   && exit 1
+
 IFS=' ' read -a messageids <<< "$RESULT"
 
 for messageid in "${messageids[@]}"
@@ -57,7 +58,7 @@ do
       continue
     fi
 
-#    imap_delete $messageid
+    imap_delete $messageid
 done
 
 # Logout
