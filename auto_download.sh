@@ -68,6 +68,6 @@ echo "torrent file downloaded successfully, located at $temptorrentfiledest"
 
 $torrentutility -a -noconfirm "$temptrackerfiledest" "$temptorrentfiledest"
 
-#mv $temptorrentfiledest $torrentfiledest
+mv "$temptorrentfiledest" "$torrentfiledest"
 rm "$temptrackerfiledest"
 loginfo "torrent download in progress"
