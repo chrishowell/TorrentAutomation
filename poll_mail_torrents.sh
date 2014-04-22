@@ -40,7 +40,7 @@ else
 fi
 
 # Get the body of any unread emails
-imap_search "SUBJECT" "Torrent"
+imap_search "HEADER X-Originating-Email $monitor_email"
 [ "$?" != 0 ] \
   && imap_logout \
   && exit 1
